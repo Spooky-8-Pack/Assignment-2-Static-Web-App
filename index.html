@@ -149,6 +149,58 @@
             image: ,
           }
         ];
+      const gallery = document.getElementById('gallery');
+      const searchInput = document.getElementById('searchInput');
+
+      function createAnimalCard(animal) {
+      const card = document.createElement('div');
+      card.className = 'animal-card';
+      card.tabIndex = 0;
+      card.setAttribute('role', 'button');
+      card.setAttribute('aria-label', `More details about ${animal.name}`);
+      card.innerHTML = `
+        <img src="${animal.image}" alt="Image of ${animal.name}" />
+        <div class="animal-info">
+          <div class="animal-name">${animal.name}</div>
+          <div class="animal-summary">${animal.summary}</div>
+        </div>
+      `;
+      card.addEventListener('click', () => {
+        // Store selected animal in sessionStorage and navigate to details page
+        sessionStorage.setItem('selectedAnimal', JSON.stringify(animal));
+        window.location.href = 'details.html';
+      });
+      card.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          card.click();
+        }
+      });
+      return card;
+    }
+
+    function renderGallery(filterText = '') {
+      gallery.innerHTML = '';
+      const filteredAnimals = animals.filter(a =>
+        a.name.toLowerCase().includes(filterText.toLowerCase()) ||
+        a.species.toLowerCase().includes(filterText.toLowerCase())
+      );
+      if (filteredAnimals.length === 0) {
+        gallery.innerHTML = '<p>No animals found matching your search.</p>';
+        return;
+      }
+      filteredAnimals.forEach(animal => {
+        gallery.appendChild(createAnimalCard(animal));
+      });
+    }
+
+    searchInput.addEventListener('input', (e) => {
+      renderGallery(e.target.value);
+    });
+
+    // Initial render
+    renderGallery();
+
       </script>
     </header>
   </body>
